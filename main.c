@@ -8,9 +8,9 @@ float computeAverage(int*, int);
 void main() {
     char fileName[50];
     char fileNameW[50];
-    printf("Enter the file name you want to read from:");
+    printf("Enter the file name you want to read from: ");
     scanf("%s", fileName);
-    printf("Enter the file name you want to write to");
+    printf("Enter the file name you want to write to: ");
     scanf("%s", fileNameW);
     readFile(fileName, fileNameW);
 
