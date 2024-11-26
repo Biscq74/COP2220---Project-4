@@ -25,32 +25,33 @@ void fix_backslashes(char*);
     This data is then passed to the `readFile` function for processing.
 */
 void main() {
-    
-    char filePath[256];
+
+    char fileName[256];
     char fileNameW[256];
 
 
-    printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\filename.txt): ");
-    scanf("%255s", filePath);
-    getchar(); 
+    printf("Enter the file name you want to read from (EX: output.txt): ");
+    scanf("%s", fileName);
 
     printf("Enter the file name you want to write to (EX: output.txt): ");
-    scanf("%255s", fileNameW);
-    getchar();
+    scanf("%s", fileNameW);
 
-    readFile(filePath, fileNameW);
+    readFile(fileName, fileNameW);
 }
 
 /*
     Reads data from the input file, processes it, and calls the `writeFile` function
     to write the results to the output file.
 */
-void readFile(char filePath[256], char fileNameW[256]) {
+void readFile(char fileName[256], char fileNameW[256]) {
+    char filePathWay[256];
+    printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\): ");
+    scanf("%s", filePathWay);
+    strcat(filePathWay, fileName);
+    fix_backslashes(filePathWay);
+    printf("(read) File name is: %s\n", filePathWay);
     
-    fix_backslashes(filePath);
-
-    
-    FILE *fptr = fopen(filePath, "r");
+    FILE *fptr = fopen(filePathWay, "r");
     if (fptr == NULL) {
         printf("File not found.\n");
         exit(0);
@@ -77,13 +78,13 @@ void readFile(char filePath[256], char fileNameW[256]) {
         recordsAry[i][cols] = computeAverage(recordsAry[i], cols);
     }
 
-  
+
     fclose(fptr);
 
-   
+
     writeFile(fileNameW, recordsAry, rows, cols);
 
- 
+
     freeAry(recordsAry, rows);
 }
 
@@ -91,14 +92,14 @@ void readFile(char filePath[256], char fileNameW[256]) {
     Writes the processed data (including averages) to the output file.
 */
 void writeFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
-    char filePathW[256];
-    printf("Enter the full file path to save the output (EX: C:\\Users\\...\\%s): ", fileNameW);
-    scanf("%255s", filePathW);
-    getchar(); 
+    char filePathWay[256];
+    printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\filename.txt): ");
+    scanf("%s", filePathWay);
+    strcat(filePathWay, fileNameW);
+    fix_backslashes(filePathWay);
+    printf("(write) File name is: %s\n", filePathWay);
 
-    fix_backslashes(filePathW);
-
-    FILE* fptr = fopen(filePathW, "w");
+    FILE* fptr = fopen(filePathWay, "w");
     if (fptr == NULL) {
         printf("Error opening file for writing.\n");
         exit(0);
@@ -113,9 +114,8 @@ void writeFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
         for (int j = 0; j < cols; j++) {
             fprintf(fptr, "%d ", recordsAry[i][j]);
         }
-        fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);  
+        fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);
     }
-
     
     fclose(fptr);
 }
@@ -125,10 +125,10 @@ void writeFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
 */
 float computeAverage(int* grades, int numCols) {
     int sum = 0;
-    for (int i = 1; i < numCols; i++) { 
+    for (int i = 1; i < numCols; i++) {
         sum += grades[i];
     }
-    return (float)sum / (numCols - 1); 
+    return (float)sum / (numCols - 1);
 }
 
 /*
