@@ -1,113 +1,155 @@
 /*
     Program 4 - Brandin Dooley & Aric Abella
-Program uses user input to open a file to read from and a file to write to.
-The program reads student ID's and grades associated with the ID's
-storing this data to a dynamically created array. This data is then used
-to compute the average for each student saving this value to the
-array associating it with the correct student. This data is then written
-to the write file specified by the user.
+    Program uses user input to open a file to read from and a file to write to.
+    The program reads student IDs and grades associated with the IDs,
+    storing this data to a dynamically created array. This data is then used
+    to compute the average for each student, saving this value to the
+    array associating it with the correct student. This data is then written
+    to the write file specified by the user.
 */
 
-//Global Declarations
+// Global Declarations
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void readFile(char[50], char[50]);
-void writeFile(char[50], int**, int, int);
+// Function Prototypes
+void readFile(char[256], char[256]);
+void writeFile(char[256], int**, int, int);
 float computeAverage(int*, int);
-void freeArray(int*, int);
+void freeAry(int**, int);
+void fix_backslashes(char*);
 
 /*
-Takes user input for the file to read from and write to
-this data is then passed to the readFile function were the
-data is processed.
+    Main function takes user input for the file to read from and write to.
+    This data is then passed to the `readFile` function for processing.
 */
 void main() {
-    //Local declarations
-    char fileName[50];
-    char fileNameW[50];
+    
+    char filePath[256];
+    char fileNameW[256];
 
-    //Local statements
-    printf("Enter the file name you want to read from: ");
-    scanf("%s", fileName);
-    printf("Enter the file name you want to write to: ");
-    scanf("%s", fileNameW);
-    readFile(fileName, fileNameW);
 
+    printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\filename.txt): ");
+    scanf("%255s", filePath);
+    getchar(); 
+
+    printf("Enter the file name you want to write to (EX: output.txt): ");
+    scanf("%255s", fileNameW);
+    getchar();
+
+    readFile(filePath, fileNameW);
 }
 
+/*
+    Reads data from the input file, processes it, and calls the `writeFile` function
+    to write the results to the output file.
+*/
+void readFile(char filePath[256], char fileNameW[256]) {
+    
+    fix_backslashes(filePath);
 
-void readFile(char fileName[50], char fileNameW[50]){
-    //Creates *filePath* for read file and open file pointer
-    char filePath[50] = "C:\\Users\\Biscq\\";
-    strcat(filePath, fileName);
+    
     FILE *fptr = fopen(filePath, "r");
     if (fptr == NULL) {
-        printf("File not found\n");
+        printf("File not found.\n");
         exit(0);
     }
 
-    //Reads first two values containing row and col info, prints
+    // Read row and column counts
     int rows = 0, cols = 0;
     fscanf(fptr, "%d", &rows);
     fscanf(fptr, "%d", &cols);
     printf("Rows: %d\nCols: %d\n", rows, cols);
 
-    //Creates 2d array
+    // Create a 2D array dynamically
     int** recordsAry = (int**)malloc(rows * sizeof(int*));
-    for(int i = 0; i < rows; i++) {
-        recordsAry[i] = (int*)malloc((cols + 1)  * sizeof(int));
+    for (int i = 0; i < rows; i++) {
+        recordsAry[i] = (int*)malloc((cols + 1) * sizeof(int));
     }
 
-    //Fills 2d array with values from file
-    for(int i = 0; i < rows; i++) {
-       for(int j = 0; j < cols; j++) {
+    // Fill the array with data from the file
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             fscanf(fptr, "%d", &recordsAry[i][j]);
-       }
+        }
+        // Compute the average and store it in the last column
         recordsAry[i][cols] = computeAverage(recordsAry[i], cols);
     }
-    //Closes read file
+
+  
     fclose(fptr);
 
+   
     writeFile(fileNameW, recordsAry, rows, cols);
 
-    free(recordsAry);
+ 
+    freeAry(recordsAry, rows);
 }
 
-void writeFile(char fileNameW[50],int** recordsAry, int rows, int cols){
-    char filePathW[50] = "C:\\Users\\Biscq\\";
-    strcat(filePathW, fileNameW);
+/*
+    Writes the processed data (including averages) to the output file.
+*/
+void writeFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
+    char filePathW[256];
+    printf("Enter the full file path to save the output (EX: C:\\Users\\...\\%s): ", fileNameW);
+    scanf("%255s", filePathW);
+    getchar(); 
+
+    fix_backslashes(filePathW);
+
     FILE* fptr = fopen(filePathW, "w");
-    if(fptr == NULL) {
-        printf("File not found\n");
+    if (fptr == NULL) {
+        printf("Error opening file for writing.\n");
+        exit(0);
     }
-     fprintf(fptr, "%d\n", rows);
+
+    // Write rows and columns (including the extra column for averages)
+    fprintf(fptr, "%d\n", rows);
     fprintf(fptr, "%d\n", cols + 1);
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; j++) {
+
+    // Write the array contents
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             fprintf(fptr, "%d ", recordsAry[i][j]);
         }
-        fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);
+        fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);  
     }
+
+    
+    fclose(fptr);
 }
+
 /*
-Computes the average for the row(the student) and returns
-this value as a float.
+    Computes the average for a row (the student's grades) and returns it as a float.
 */
 float computeAverage(int* grades, int numCols) {
     int sum = 0;
-    for(int i = 1; i < numCols; i++) {
-        sum = sum + grades[i];
+    for (int i = 1; i < numCols; i++) { 
+        sum += grades[i];
     }
-    return (float)(sum / (numCols - 1));
+    return (float)sum / (numCols - 1); 
 }
 
-//Frees dynamic memory to avoid memory leak
-void freeAry(int** recordsAry[], int rows){
-for(int i = 0; i < rows; i++) {
+/*
+    Frees dynamically allocated memory for the 2D array to avoid memory leaks.
+*/
+void freeAry(int** recordsAry, int rows) {
+    for (int i = 0; i < rows; i++) {
         free(recordsAry[i]);
     }
     free(recordsAry);
 }
 
+/*
+    Fixes backslashes in a file path, ensuring proper formatting with double backslashes.
+*/
+void fix_backslashes(char* path) {
+    for (int i = 0; i < strlen(path); i++) {
+        if (path[i] == '\\') {
+            memmove(&path[i + 1], &path[i], strlen(path) - i + 1);
+            path[i] = '\\';
+            i++;
+        }
+    }
+}
