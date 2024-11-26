@@ -1,3 +1,14 @@
+/*
+    Program 4 - Brandin Dooley & Aric Abella
+Program uses user input to open a file to read from and a file to write to.
+The program reads student ID's and grades associated with the ID's
+storing this data to a dynamically created array. This data is then used 
+to compute the average for each student saving this value to the 
+array associating it with the correct student. This data is then written
+to the write file specified by the user.
+*/
+
+//Global Declerations
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,9 +16,17 @@
 void readFile(char[50], char[50]);
 float computeAverage(int*, int);
 
+/*
+Takes user input for the file to read from and write to 
+this data is then passed to the readFile function were the 
+data is proccessed.
+*/
 void main() {
+    //Local declerations
     char fileName[50];
     char fileNameW[50];
+    
+    //Local statements
     printf("Enter the file name you want to read from: ");
     scanf("%s", fileName);
     printf("Enter the file name you want to write to: ");
@@ -15,6 +34,7 @@ void main() {
     readFile(fileName, fileNameW);
 
 }
+
 
 void readFile(char fileName[50], char fileNameW[50]){
     char filePath[50] = "C:\\Users\\Biscq\\";
@@ -69,6 +89,10 @@ void readFile(char fileName[50], char fileNameW[50]){
     free(recordsAry);
 }
 
+/*
+Computes the average for the row(the student) and returns
+this value as a float.
+*/
 float computeAverage(int* grades, int numCols) {
     int sum = 0;
     for(int i = 1; i < numCols; i++) {
