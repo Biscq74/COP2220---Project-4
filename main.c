@@ -32,7 +32,8 @@ void readFile(char fileName[50], char fileNameW[50]) {
     fix_backslashes(filePath);
     strcat(filePath, fileName);
 
-  
+    printf("%s", filePath);
+    
     FILE *fptr = fopen(filePath, "r");
     if (fptr == NULL) {
         printf("File not found.\n");
