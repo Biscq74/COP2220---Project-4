@@ -8,7 +8,7 @@
     to the write file specified by the user.
 */
 
-//Global declerations
+//Global declarations
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
