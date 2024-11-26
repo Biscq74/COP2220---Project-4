@@ -63,7 +63,7 @@ void ReadFile() {
     // Fill the array with data from the file
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            fscanf(fptr, "%d", &recordsAry[i][j]);
+            fscanf(fptr, "%f", &recordsAry[i][j]);
         }
         // Compute the average and store it in the last column
         recordsAry[i][cols] = ComputeAverage(recordsAry[i], cols);
@@ -105,7 +105,11 @@ void WriteFile( float** recordsAry, int rows, int cols) {
     // Write the array contents
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            fprintf(fptr, "%f ", recordsAry[i][j]);
+            if(j == 0) {
+                fprintf(fptr, "%.0f ", recordsAry[i][j]);
+            }else {
+                fprintf(fptr, "%.2f ", recordsAry[i][j]);
+            }
         }
         fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);
     }
@@ -115,11 +119,11 @@ void WriteFile( float** recordsAry, int rows, int cols) {
 
 // Function to compute the average for a row (student's grades)
 float ComputeAverage(float* grades, int numCols) {
-    int sum = 0;
+    float sum = 0;
     for (int i = 1; i < numCols; i++) {
         sum += grades[i];
     }
-    return (float)sum / (numCols - 1);
+    return sum / (numCols - 1);
 }
 
 // Function to free dynamically allocated memory
