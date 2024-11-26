@@ -15,12 +15,12 @@
 
 // Function Prototypes
 void ReadFile();
-void WriteFile(int**, int, int);
-float ComputeAverage(int*, int);
-void FreeAry(int**, int);
+void WriteFile(float**, int, int);
+float ComputeAverage(float*, int);
+void FreeAry(float**, int);
 void FixBackslashes(char*);
 
-//Calls readFile function which calls all other needed functions
+// Main function
 void main() {
     // Local statements
 
@@ -29,10 +29,7 @@ void main() {
     printf("File was processed, Goodbye! :)\n");
 }
 
-/*
-    Reads data from the input file, processes it, and calls the `writeFile` function
-    to write the results to the output file.
-*/
+// Function to handle reading from a file
 void ReadFile() {
     char filePathWay[256];
     FILE *fptr;
@@ -58,9 +55,9 @@ void ReadFile() {
     fscanf(fptr, "%d", &cols);
 
     // Create a 2D array dynamically using row and col info
-    int** recordsAry = (int**)malloc(rows * sizeof(int*));
+    float** recordsAry = (float**)malloc(rows * sizeof(float*));
     for (int i = 0; i < rows; i++) {
-        recordsAry[i] = (int*)malloc((cols + 1) * sizeof(int));
+        recordsAry[i] = (float*)malloc((cols + 1) * sizeof(float));
     }
 
     // Fill the array with data from the file
@@ -81,10 +78,8 @@ void ReadFile() {
     FreeAry(recordsAry, rows);
 }
 
-/*
-    Writes the processed data (including averages) to the output file.
-*/
-void WriteFile( int** recordsAry, int rows, int cols) {
+// Function to handle writing to a file
+void WriteFile( float** recordsAry, int rows, int cols) {
     char filePathWay[256];
     FILE *fptr;
 
@@ -110,7 +105,7 @@ void WriteFile( int** recordsAry, int rows, int cols) {
     // Write the array contents
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            fprintf(fptr, "%d ", recordsAry[i][j]);
+            fprintf(fptr, "%f ", recordsAry[i][j]);
         }
         fprintf(fptr, "%.2f\n", (float)recordsAry[i][cols]);
     }
@@ -118,11 +113,8 @@ void WriteFile( int** recordsAry, int rows, int cols) {
     fclose(fptr);
 }
 
-
-/*
-    Computes the average for a row (the student's grades) and returns it as a float.
-*/
-float ComputeAverage(int* grades, int numCols) {
+// Function to compute the average for a row (student's grades)
+float ComputeAverage(float* grades, int numCols) {
     int sum = 0;
     for (int i = 1; i < numCols; i++) {
         sum += grades[i];
@@ -130,19 +122,15 @@ float ComputeAverage(int* grades, int numCols) {
     return (float)sum / (numCols - 1);
 }
 
-/*
-    Frees dynamically allocated memory for the 2D array to avoid memory leaks.
-*/
-void FreeAry(int** recordsAry, int rows) {
+// Function to free dynamically allocated memory
+void FreeAry(float** recordsAry, int rows) {
     for (int i = 0; i < rows; i++) {
         free(recordsAry[i]);
     }
     free(recordsAry);
 }
 
-/*
-    Fixes backslashes in a file path, ensuring proper formatting with double backslashes.
-*/
+// Function to fix backslashes in file paths
 void FixBackslashes(char* path) {
     for (int i = 0; i < strlen(path); i++) {
         if (path[i] == '\\') {
