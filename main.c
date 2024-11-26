@@ -7,6 +7,8 @@
     array associating it with the correct student. This data is then written
     to the write file specified by the user.
 */
+
+//Global declerations
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
