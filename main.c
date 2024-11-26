@@ -1,14 +1,3 @@
-/*
-    Program 4 - Brandin Dooley & Aric Abella
-    Program uses user input to open a file to read from and a file to write to.
-    The program reads student IDs and grades associated with the IDs,
-    storing this data to a dynamically created array. This data is then used
-    to compute the average for each student, saving this value to the
-    array associating it with the correct student. This data is then written
-    to the write file specified by the user.
-*/
-
-// Global Declarations
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,49 +9,46 @@ float ComputeAverage(int*, int);
 void FreeAry(int**, int);
 void FixBackslashes(char*);
 
-/*
-    Main function takes user input for the file to read from and write to.
-    This data is then passed to the `readFile` function for processing.
-*/
+// Main function
 void main() {
-    //Local declarations
+    // Local declarations
     char fileName[256];
     char fileNameW[256];
-    int cont = 1;
 
-    //Local statements
+    
     printf("Enter the file name you want to read from (EX: output.txt): \n");
     scanf("%s", fileName);
     printf("Enter the file name you want to write to (EX: output.txt): \n");
     scanf("%s", fileNameW);
 
+
     ReadFile(fileName, fileNameW);
 
-    printf("File was processed, Goodbye! :)");
+    printf("File was processed, Goodbye! :)\n");
 }
 
-/*
-    Reads data from the input file, processes it, and calls the `writeFile` function
-    to write the results to the output file.
-*/
+// Function to handle reading from a file
 void ReadFile(char fileName[256], char fileNameW[256]) {
-    /*
-     *Takes user defined filepath and combines it with the filename, this string is then adjusted to have the
-     *correct amount of backslashes so that the file can be accessed
-    */
     char filePathWay[256];
-    printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\): \n");
-    scanf("%s", filePathWay);
-    strcat(filePathWay, fileName);
-    FixBackslashes(filePathWay);
-    // Opens file
-    FILE *fptr = fopen(filePathWay, "r");
-    if (fptr == NULL) {
-        printf("Error opening file for reading\n");
-        exit(0);
+    FILE *fptr;
+    
+    // Loop until a valid file is entered
+    while (1) {
+        printf("Enter the full file path you want to read from (EX: C:\\Users\\...\\): \n");
+        scanf("%s", filePathWay);
+        strcat(filePathWay, fileName);
+        FixBackslashes(filePathWay);
+
+        // Attempt to open the file
+        fptr = fopen(filePathWay, "r");
+        if (fptr == NULL) {
+            printf("Error opening file for reading. Please try again.\n");
+        } else {
+            break; 
+        }
     }
 
-    // Reads row and column counts
+    // Read row and column counts
     int rows = 0, cols = 0;
     fscanf(fptr, "%d", &rows);
     fscanf(fptr, "%d", &cols);
@@ -84,30 +70,32 @@ void ReadFile(char fileName[256], char fileNameW[256]) {
 
     fclose(fptr);
 
-    //Call writeFile function in order to write the data to a user define file
+    // Write the data to the output file
     WriteFile(fileNameW, recordsAry, rows, cols);
 
+    // Free the dynamically allocated memory
     FreeAry(recordsAry, rows);
 }
 
-/*
-    Writes the processed data (including averages) to the output file.
-*/
+// Function to handle writing to a file
 void WriteFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
-    /*
-   *Takes user defined filepath and combines it with the filename, this string is then adjusted to have the
-   *correct amount of backslashes so that the file can be accessed
-  */
     char filePathWay[256];
-    printf("Enter the full file path you want to write to (EX: C:\\Users\\...\\filename.txt): \n");
-    scanf("%s", filePathWay);
-    strcat(filePathWay, fileNameW);
-    FixBackslashes(filePathWay);
-    // Opens file
-    FILE* fptr = fopen(filePathWay, "w");
-    if (fptr == NULL) {
-        printf("Error opening file for writing.\n");
-        exit(0);
+    FILE *fptr;
+
+    // Loop until a valid file is entered for writing
+    while (1) {
+        printf("Enter the full file path you want to write to (EX: C:\\Users\\...\\filename.txt): \n");
+        scanf("%s", filePathWay);
+        strcat(filePathWay, fileNameW);
+        FixBackslashes(filePathWay);
+
+        // Attempt to open the file
+        fptr = fopen(filePathWay, "w");
+        if (fptr == NULL) {
+            printf("Error opening file for writing. Please try again.\n");
+        } else {
+            break; 
+        }
     }
 
     // Write rows and columns (including the extra column for averages)
@@ -125,9 +113,7 @@ void WriteFile(char fileNameW[256], int** recordsAry, int rows, int cols) {
     fclose(fptr);
 }
 
-/*
-    Computes the average for a row (the student's grades) and returns it as a float.
-*/
+// Function to compute the average for a row (student's grades)
 float ComputeAverage(int* grades, int numCols) {
     int sum = 0;
     for (int i = 1; i < numCols; i++) {
@@ -136,9 +122,7 @@ float ComputeAverage(int* grades, int numCols) {
     return (float)sum / (numCols - 1);
 }
 
-/*
-    Frees dynamically allocated memory for the 2D array to avoid memory leaks.
-*/
+// Function to free dynamically allocated memory
 void FreeAry(int** recordsAry, int rows) {
     for (int i = 0; i < rows; i++) {
         free(recordsAry[i]);
@@ -146,9 +130,7 @@ void FreeAry(int** recordsAry, int rows) {
     free(recordsAry);
 }
 
-/*
-    Fixes backslashes in a file path, ensuring proper formatting with double backslashes.
-*/
+// Function to fix backslashes in file paths
 void FixBackslashes(char* path) {
     for (int i = 0; i < strlen(path); i++) {
         if (path[i] == '\\') {
